@@ -1,0 +1,115 @@
+@charset "utf-8";
+/* CSS Document */
+.clearfix::after {
+	content: '.';
+	height: 0;
+	display: block;
+	visibility: hidden;
+	clear: both;
+}
+.clearfix {
+	*zoom: 1;
+}
+
+.wrapper{
+	width: 935px;
+	height: 316px;
+	margin: 100px auto;
+	/*border: 1px solid red;*/
+}
+.img_main li{
+	float: left;
+}
+/*.wrapper>a{
+	width: 36px;
+	height: 60px;
+	position: absolute;
+	top: 50%;
+	margin-top: -30px;
+	line-height: 60px;
+	text-align: center;
+	font-size: 22px;
+	font-weight: 900;
+	cursor: pointer;
+	color: #fff;
+}
+.wrapper>a:hover{
+	background: rgba(0,0,0,0.4);
+}
+.prev{
+	border-radius: 0px 4px 4px 0px;
+	left: 0;
+	float: left;
+}
+.next{
+	border-radius: 4px 0px 0px 4px;
+	right: 0;
+	float: right;
+}
+.marker{
+	width: 140px;
+	height: 20px;
+	padding: 5px;
+	display: flex;
+	border-radius: 10px;
+	justify-content: space-around;
+	position: absolute;
+	left: 50%;
+	bottom: 20px;
+	transform: translate(-50%, 0);
+	background: rgba(255,255,255,0.4);
+	box-sizing: border-box;
+	z-index: 101;
+}
+.marker li{
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #fff;
+	cursor: pointer;
+}
+.marker .active {
+	background: red;
+}*/
+
+
+
+
+
+
+
+.slide_wrap{
+	overflow: hidden;
+	position: relative;
+}
+.slide_main{
+	position: absolute;
+	height: 100%;
+	z-index: 1;
+}
+.slide_tab {
+	padding:5px 10px;
+	display: flex;
+	justify-content: space-between;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0);
+	bottom: 10%;
+	z-index: 2;
+	background: rgba(0,0,0,.5);
+	border-radius: 15px;
+
+}
+.slide_tab li {
+	width: 15px; 
+	height: 15px; 
+	border-radius: 50%; 
+	background: #ffffff; 
+	cursor: pointer;
+	margin: 0px 8px;
+}
+.slide_tab .active {
+	background: red;
+}
+
+
