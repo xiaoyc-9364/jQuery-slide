@@ -67,7 +67,7 @@
 		},function() {
 			_this.play(); 
 		})
-		
+
 		$('.slide_tab li').each(function(index) {
 			$(this).hover(function(){
 					clearInterval(_this.timer);
@@ -124,7 +124,7 @@
 
 
 $(document).ready(function() {
-	var json = {
+	var imgGroup = {
 	imgData: [
 		{title: '百度', alt:'百度', href: 'http://www.baidu.com', src: 'image/1.jpg'},
 		{title: '淘宝', alt:'淘宝', href: 'http://www.taobao.com', src: 'image/2.jpg'},
@@ -135,10 +135,10 @@ $(document).ready(function() {
 	],
 	timeout: 2000,
 };
-	$('.wrapper').slide(json);
-	$('.next').click(function(e) {
-		console.log($(this).val('class'));
-	})
+	
+	
+		$('.wrapper').slide(imgGroup);
+
 });
 
 
