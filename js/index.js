@@ -1,124 +1,129 @@
 
-(function($) {
-	$.fn.slide = function(opts) {
-		this.options = $.extend({}, $.fn.slide.defaults, opts);
+;(function($) {
+	$.fn.carousel = function(opts) {
+		var carouselArr = [];
+		return this.each(function() {
+			carouselArr.push(new Carousel($(this), opts));
+		});
+		// return carouselArr;
+		// return new Carousel($(this), opts)
+	};
+
+
+
+function Carousel(ele, opts) {		//参数类型：selector-目标元素选择器，opt-包含一个图片信息数组的对象
+	this.$wrap = ele;
+	this.options = $.extend({}, this.defaults, opts);  //复制对象
+	this.init();	
+}
+
+Carousel.prototype = {
+	defaults: {			//默认参数
+		imgData: [],
+		timeout: 3000,		//轮播器切换的间隔时间
+		direction: true,	//轮播器的运动方向 true-正方向，false-反方向
+		speed: 800			//过渡动画的系数
+	},
+
+	init: function() {		//初始化
 		this.createNode();
-		this.moveImg(0);
 		this.addEvent();
-		this.play();
-		return this;
-	};
+		this.showCurrentImg(0);	//初始状态跳转至第一张
+		this.autoPlay();
+	},
 
-
-	$.fn.slide.defaults = {
-		imgData:[],
-		timeout: 3000,
-		dir: 1,
-		speed: 800
-	};
-
-	$.fn.createNode = function() {		//创建元素
+	createNode: function() {
 		var _this = this;
-		this.each(function() {
-			var thisImg = _this.options.imgData;
-			$(this).addClass('slide_wrap');		//添加class
-			var imgUl = $('<ul></ul').addClass('slide_main');
-			var dotUl = $('<ul></ul').addClass('slide_tab');
-			var oLI, oLink, oImg;
-			_this.wrapWidth = $(this).width();		//获取高度
+		var thisImgData = this.options.imgData;
+		this.oImgUl = $('<ul></ul').addClass('slide_main');
+		this.dotUl = $('<ul></ul').addClass('slide_tab');
+		this.wrapWidth = this.$wrap.width();
+		var oLi, oLink, oImg;
+		this.$wrap.addClass('slide_wrap');
 
-			$.each(thisImg, function(index) {
-				oImg = $('<img/>').attr({
-						src:thisImg[index].src,
-						alt:thisImg[index].alt
-					}).css('width',_this.wrapWidth);
+		$.each(thisImgData, function(index) {
+			oImg = $('<img/>').attr({
+						src:thisImgData[index].src,
+						alt:thisImgData[index].alt
+					}).css('width', _this.wrapWidth);
 
-				oLink = $('<a></a>').attr({
-						href:thisImg[index].href,
-						title:thisImg[index].title
+			oLink = $('<a></a>').attr({
+					href:thisImgData[index].href,
+					title:thisImgData[index].title
 					});
 
-				oLi = $('<li></li>');
+			oLi = $('<li></li>');
 
-				oLink.append(oImg);
-				oLi.append(oLink);
-				imgUl.append(oLi);
+			oLink.append(oImg);
+			oLi.append(oLink);
+			_this.oImgUl.append(oLi);
+			_this.dotUl.append($('<li></li>'));
+		});
 
-				dotUl.append($('<li></li>'));
-			});
-
-			$(this).append(imgUl).append(dotUl);
-
-			$('.slide_main li').eq(0).clone(true).appendTo(imgUl);	//添加辅助图
-			$('.slide_main li').each(function(index) {
-				$(this).css({
-					position: 'absolute',
-					left:index * _this.wrapWidth
+		this.$wrap.append(this.oImgUl).append(this.dotUl);
+		this.oImgUl.find('li').eq(0).clone(true).appendTo(this.oImgUl);
+		this.oImgUl.find('li').each(function(index) {
+			$(this).css({
+				position: 'absolute',
+				left: index * _this.wrapWidth
 				});
+		});
+	},
+
+	addEvent: function() {
+		var _this = this;
+		this.oImgUl.hover(function() {
+				_this.paused();
+			}, function() {
+				_this.autoPlay();
+			});
+		this.dotUl.children().each(function(index) {
+			$(this).hover(function() {
+				_this.paused();
+				_this.showCurrentImg(index);
+			}, function() {
+				_this.autoPlay();
 			});
 		});
-		return this;
-	};
+	},
 
-	$.fn.addEvent = function() {	//绑定事件
+	showCurrentImg: function(index) {
 		var _this = this;
-		$('.slide_main').hover(function() {
-			clearInterval(_this.timer);
-		},function() {
-			_this.play(); 
-		})
+	 	var len = this.dotUl.children().length;
 
-		$('.slide_tab li').each(function(index) {
-			$(this).hover(function(){
-					clearInterval(_this.timer);
-					_this.moveImg(index);
-				},function(){
-					_this.play(); 
-				})
-		})
-		return this;
-	}
+	 	this.cur = index;
+	
+ 		if (this.cur > len) {
+ 			this.oImgUl.css('left', 0);
+ 			this.cur = 1;
+ 		} else if (this.cur == -1) {
+ 			this.oImgUl.css('left',-this.wrapWidth * len);
+ 			this.cur = len - 1;
+ 		}
+	 	this.dotUl.find('li').eq(this.cur % len).addClass('active')
+	 		.siblings().removeClass('active');
+	 	this.oImgUl.stop().animate({
+	 		left: -_this.wrapWidth * _this.cur
+	 	}, _this.options.speed);
+	},
 
-	$.fn.moveImg = function(index) {
+	autoPlay: function() {
 		var _this = this;
-	 	var len = $('.slide_tab li').length;
-	 	_this.cur = index;
-		if(_this.cur > len){  
-	        $('.slide_main').css('left',0);
-	        _this.cur = 1;
-	    } else if (_this.cur == -1){
-	        $('.slide_main').css({
-	        	left: -_this.wrapWidth * len
-	        });
-	        _this.cur = len-1;
-	    }
-	    $('.slide_tab li').eq(_this.cur%len).addClass('active').siblings().removeClass();
-		$('.slide_main').stop().animate({
-			left:-_this.cur * _this.wrapWidth
-		}, _this.options.speed);
-		return this;
-	};
-
-	$.fn.go = function(n) {
 		clearInterval(this.timer);
-		this.moveImg(this.cur + n);
-		return this;
-	};
-
-	$.fn.play = function() {
-		var _this = this;
-		clearInterval(_this.timer);
-		
-		_this.timer = setInterval(function(){
-			_this.moveImg(_this.options.dir > 0 ? ++_this.cur : --_this.cur);
+		this.timer = setInterval(function() {
+			_this.showCurrentImg(_this.cur + 1);
 		}, _this.options.timeout);
-		return this;
-	};
+	},
 
-	$.fn.paused = function() {
-		clearInterval(_this.timer);
+	paused: function() {
+		clearInterval(this.timer);
+	},
 
+	go: function(n) {
+		this.showCurrentImg(this.cur + n);
 	}
+};
+
 })(jQuery);
 
 
@@ -137,43 +142,9 @@ $(document).ready(function() {
 };
 	
 	
-		$('.wrapper').slide(imgGroup);
-
+		var a = $('.wrapper.aaa').carousel(imgGroup);
+	
 });
 
 
 
-/*
-$(document).ready(function() {
-	var firstImg = $('ul.slide_main li').eq(0);
-	var imgWidth = firstImg.width();
-	var timeout = 2000;
-	var index = 0
-	firstImg.clone(true).appendTo('.slide_main');
-	var len = $('ul.slide_main li').length;
-	$('.slide_main').css({
-		width: len * imgWidth,
-		position: 'relative'
-		});
-	moveImg(0);
-	timer = setInterval(function() {
-		moveImg(index++);
-	},timeout);
-	
-	function moveImg() {
-		if(index >= len){  
-	        $('.slide_main').css('left',0);
-	        index = 1;
-	    } else if (index == -1){
-	        $('.slide_main').css({
-	        	left: -imgWidth * (len-1)
-	        });
-	        index = len-2;
-	    }
-		$('.slide_main').animate({
-			left:-index *imgWidth
-		}, 1000);
-	}
-
-
-});*/
