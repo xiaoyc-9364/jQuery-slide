@@ -13,13 +13,23 @@
 
 .wrapper{
 	width: 300px;
-	height: 316px;
-	margin: 100px auto;
+	height: 250px;
 	border: 1px solid red;
+	float: left;
+	margin-left: 30px;
+}
+.ctrl {
+	width: 960px;
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
 }
 
+
+
+
 .slide_wrap{
-	/*overflow: hidden;*/
+	overflow: hidden;
 	position: relative;
 }
 .slide_main{
